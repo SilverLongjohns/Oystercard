@@ -3,6 +3,7 @@ class Oystercard
   
   DEFAULT_BALANCE = 0
   MAXIMUM_BALANCE = 90
+  FARE = 1
   
   def initialize(balance = DEFAULT_BALANCE)
     @balance = balance
@@ -13,20 +14,23 @@ class Oystercard
     @balance += amount
   end
   
-  def deduct(amount)
-    @balance -= amount
-  end
-  
   def touch_in
-    @status = 1
+    raise "Not enough balance" if @balance < FARE
+    @status = true
   end
   
   def touch_out
-    @status = 0
+    deduct(FARE)
+    @status = false
   end
   
   def in_journey?
-    return true if @status == 1
-    return false if @status == 0
+    @status
+  end
+  
+  private
+  
+  def deduct(amount)
+    @balance -= amount
   end
 end
