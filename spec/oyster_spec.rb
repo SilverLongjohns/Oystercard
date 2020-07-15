@@ -1,6 +1,8 @@
 require "oyster"
 
 describe Oystercard do
+  let(:station) {:station}
+  
   describe "balance" do
     it "starts at 0" do
       expect(subject.balance).to eq Oystercard::DEFAULT_BALANCE
@@ -18,30 +20,54 @@ describe Oystercard do
   
   it "registers the beginning of a journey" do
     subject.top_up(Oystercard::FARE)
-    subject.touch_in
-    expect(subject.status).to eq true
+    subject.touch_in(station)
+    expect(subject.entry_station).to_not eq nil
   end
   
   it "registers the end of a journey" do
     subject.top_up(Oystercard::FARE)
-    subject.touch_in
-    subject.touch_out
-    expect(subject.status).to eq false
+    subject.touch_in(station)
+    subject.touch_out(station)
+    expect(subject.entry_station).to eq nil
   end
   
   it "determines whether or not we are currently on a journey" do
     subject.top_up(Oystercard::FARE)
-    subject.touch_in
+    subject.touch_in(station)
     expect(subject.in_journey?).to eq true
   end
   
   it "does not let a journey begin without at least £#{Oystercard::FARE} in balance" do
-    expect{subject.touch_in}.to raise_error "Not enough balance"
+    expect{subject.touch_in(station)}.to raise_error "Not enough balance"
   end
   
   it "deducts money upon completion of a journey" do
     subject.top_up(Oystercard::FARE)
-    subject.touch_in
-    expect {subject.touch_out}.to change{subject.balance}.by(-Oystercard::FARE)
+    subject.touch_in(station)
+    expect {subject.touch_out(station)}.to change{subject.balance}.by(-Oystercard::FARE)
+  end
+  
+  it "saves the entry station upon touch in" do
+    subject.top_up(Oystercard::FARE)
+    subject.touch_in(station)
+    expect(subject.entry_station).to eq :station
+  end
+  
+  it "forgets the entry station upon touch out" do
+    subject.top_up(Oystercard::FARE)
+    subject.touch_in(station)
+    subject.touch_out(station)
+    expect(subject.entry_station).to eq nil
+  end
+  
+  # 1. Touch out stores exit station
+  # 2. Entry an exit station are paired in a hash
+  # 3. Hash is added to an array
+  
+  it "saves the exit station upon touch_out" do
+    subject.top_up(Oystercard::FARE)
+    subject.touch_in(station)
+    subject.touch_out(station)
+    expect(subject.journey).to eq [{touch_in: :station, touch_out: :station}]
   end
 end
