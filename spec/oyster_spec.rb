@@ -64,10 +64,14 @@ describe Oystercard do
   # 2. Entry an exit station are paired in a hash
   # 3. Hash is added to an array
   
-  it "saves the exit station upon touch_out" do
+  it "saves the entry and exit stations upon touch_out" do
     subject.top_up(Oystercard::FARE)
     subject.touch_in(station)
     subject.touch_out(station)
     expect(subject.journey).to eq [{touch_in: :station, touch_out: :station}]
+  end
+  
+  it "has a journey list that is empty by default" do
+    expect(subject.journey).to eq []
   end
 end
