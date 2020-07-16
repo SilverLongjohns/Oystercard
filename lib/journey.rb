@@ -1,11 +1,15 @@
 class Journey
+    
+    FARE = 1
+    PENALTY_FARE = 6
+    
     attr_reader :entry_station
-    def initialize(entry_station = nil)
-        @entry_station = entry_station
+    def initialize
+        @entry_station = nil
     end
     
-    def start
-        @entry_station
+    def start(station)
+        @entry_station = station
     end
     
     def end(exit_station)
@@ -17,6 +21,6 @@ class Journey
     end
     
     def charge_fare
-        complete? ? 1 : 6
+        complete? ? FARE : PENALTY_FARE
     end
 end

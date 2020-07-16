@@ -10,30 +10,27 @@ describe Journey do
     end
     
     it "saves a starting station" do
-        journey = Journey.new(entry_station)
-        expect(journey.start).to eq entry_station
+        expect(subject.start(entry_station)).to eq entry_station
     end
     
-    #it "saves an ending station" do
-    #    journey = Journey.new(entry_station)
-    #    journey.end(exit_station).to eq exit_station
-    #end
+    it "saves an ending station" do
+        expect(subject.end(exit_station)).to eq exit_station
+    end
     
     it "saves a complete journey" do
-        journey = Journey.new(entry_station)
-        journey.end(exit_station)
-        expect(journey.complete?).to be_truthy
+        subject.start(entry_station)
+        subject.end(exit_station)
+        expect(subject.complete?).to be_truthy
     end
     
     it "can calculate the fare for a completed journey" do
-        journey = Journey.new(entry_station)
-        journey.end(exit_station)
-        expect(journey.charge_fare).to eq 1
+        subject.start(entry_station)
+        subject.end(exit_station)
+        expect(subject.charge_fare).to eq Journey::FARE
     end
     
     it "can calculate the fare for an incomplete journey" do
-        journey = Journey.new
-        journey.end(exit_station)
-        expect(journey.charge_fare).to eq 6
+        subject.end(exit_station)
+        expect(subject.charge_fare).to eq Journey::PENALTY_FARE
     end
 end
